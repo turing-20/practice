@@ -1,5 +1,5 @@
 //Jashanpreet Singh
-#include<bits/stdc++.h>
+#include <bits/stdc++.h>
 
 using namespace std;
 
@@ -15,38 +15,40 @@ void fastio()
 void solve()
 {
     string s;
-    cin>>s;
-    int ans=0;
-    int a=1;
-    for(int i=1; i<s.length();i++)
+    cin >> s;
+    int ans = 0;
+    int a = 1;
+    for (int i = 1; i < s.length(); i++)
     {
-        if(s[i-1]==s[i])
+        if (s[i - 1] == s[i])
         {
-            a+=1;
+            a += 1;
             // cout<<"first"<<endl;
         }
         else
         {
-            ans=max(a,ans);
-            a=1;
+            ans = max(a, ans);
+            a = 1;
             // cout<<"second"<<endl;
         }
     }
-    ans=max(ans,a);
-    cout<<ans;
+    ans = max(ans, a);
+    cout << ans;
 }
-int main() {
+int main()
+{
 
     fastio();
-    #ifndef ONLINE_JUDGE 
-    freopen("input.txt", "r", stdin); 
-    freopen("output.txt", "w", stdout); 
-    #endif 
+#ifndef ONLINE_JUDGE
+    freopen("input.txt", "r", stdin);
+    freopen("output.txt", "w", stdout);
+#endif
     int t;
     // cin >> t;
-    t=1;
+    t = 1;
 
-    while(t--) {
+    while (t--)
+    {
         solve();
     }
 
