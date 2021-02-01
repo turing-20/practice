@@ -16,31 +16,34 @@ void solve()
 {
     int n;
     cin >> n;
-    vector<int> a(n);
-    for (int i = 0; i < n; i++)
+
+    if (n == 1)
     {
-        int b;
-        cin >> b;
-        a[i] = b;
+        cout << 1 << endl;
+        return;
     }
 
-    ll ans = 0;
-
-    // for (int i = 0; i < n; i++)
-    // {
-    //     cout << a[i] << " " << i << " " << endl;
-    // }
-
-    for (int i = 1; i < n; i++)
+    if (n > 1 && n < 4)
     {
-        if ((a[i] - a[i - 1]) < 0)
-        {
-            // cout << (a[i] - a[i - 1]) << endl;
-            ans += a[i - 1] - a[i];
-            a[i] = a[i] + (a[i - 1] - a[i]);
-        }
+        cout << "NO SOLUTION" << endl;
+        return;
     }
-    cout << ans;
+
+    if (n == 4)
+    {
+        cout << "2 4 1 3";
+        return;
+    }
+
+    for (int i = n; i > 0; i = i - 2)
+    {
+        cout << i << " ";
+    }
+
+    for (int i = n - 1; i > 0; i = i - 2)
+    {
+        cout << i << " ";
+    }
 }
 int main()
 {
