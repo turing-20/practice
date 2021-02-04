@@ -1,9 +1,11 @@
 import random
 import time
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 
 
 def random_selection(population, fitness):
+
+    # print("enter")
 
     sum_of_fitness = sum(fitness)
 
@@ -12,7 +14,7 @@ def random_selection(population, fitness):
 
     probability = [i/sum_of_fitness for i in fitness]
     a = random.choices(population, weights=probability)
-
+    # print("exit")
     return a[0]
 
 
@@ -31,8 +33,8 @@ def reproduce(x, y):
     # a = x[:cut]+y[cut:]
     if(maxboard == x):
         cut = random.randint(0, 7)
-        return x[:cut]+y[cut:]
-
+        maxboard = x[:cut]+y[cut:]
+    # print(maxboard)
     return maxboard
 
 
@@ -52,7 +54,7 @@ def mutate(child):
 
     if(maxboard == child):
         change_cell = random.randint(0, (len(child)-1))
-        return child[:change_cell]+[random.randint(0, 7)]+child[change_cell+1:]
+        return child[:change_cell]+[random.randint(1, 8)]+child[change_cell+1:]
 
     return maxboard
 
@@ -86,7 +88,7 @@ def printboard(board):
 
     for i in range(8):
         for j in range(8):
-            if(board[j] == i):
+            if(board[j] == i+1):
                 print('Q', end=" ")
             else:
                 print('0', end=' ')
@@ -94,12 +96,13 @@ def printboard(board):
 
 
 generation = 1
+fitness_graph = []
 
 
 def genetic_algorithm(population, fitness_func):
 
     global generation
-
+    fitness_graph.append(max([fitness_func(x) for x in population]))
     while(1):
 
         new_population = []
@@ -109,13 +112,14 @@ def genetic_algorithm(population, fitness_func):
 
             x = random_selection(population, fitness)
             y = random_selection(population, fitness)
-
-            while(x == y and generation > 10):
+            count = 0
+            while(x == y and generation > 10 and count < 10):
                 y = random_selection(population, fitness)
+                count += 1
 
             child = reproduce(x, y)
 
-            if(random.random() <= 0.05):
+            if(random.random() <= 0.5):
                 child = mutate(child)
 
             new_population.append(child)
@@ -126,26 +130,49 @@ def genetic_algorithm(population, fitness_func):
 
         max_fitness = max(fitness)
 
-        print(max_fitness, population[fitness.index(max_fitness)], generation)
+        # print(max_fitness, population[fitness.index(max_fitness)], generation)
 
         generation += 1
 
+        # for i in range(len(population)):
+        #     print(fitness[i], population[i])
+
+        fitness_graph.append(max_fitness)
         if(max_fitness >= 29):
             print(generation)
-            return population, fitness
+            y = generation
+            # plt.plot(range(1, generation+1), fitness_graph)
+            # plt.show()
+            generation = 1
+            return population, fitness, y
 
 
-if __name__ == "__main__":
+def findgeneration():
+    # print("hello")
     population = []
-    for i in range(50):
+    for i in range(20):
         a = []
         for j in range(8):
-            a.append(0)
+            a.append(1)
         population.append(a)
-    population, fitness = genetic_algorithm(population, fitness_func)
+    # print(population)
+    population, fitness, y = genetic_algorithm(
+        population, fitness_func)
     board = []
     for i in range(len(population)):
         if(fitness[i] == 29):
             board = population[i]
             break
-    printboard(board)
+    print(board)
+    # printboard(board)
+    return y
+
+
+if __name__ == "__main__":
+    sum1 = 0
+
+    for i in range(100):
+        print(i, end=" ")
+        sum1 += findgeneration()
+
+    print(sum1/100)

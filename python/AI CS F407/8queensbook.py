@@ -1,6 +1,6 @@
 import random
 import time
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 
 
 def random_selection(population, fitness):
@@ -69,12 +69,13 @@ def printboard(board):
 
 
 generation = 1
+fitness_graph = []
 
 
 def genetic_algorithm(population, fitness_func):
 
     global generation
-
+    fitness_graph.append(max([fitness_func(x) for x in population]))
     while(1):
 
         new_population = []
@@ -103,11 +104,17 @@ def genetic_algorithm(population, fitness_func):
 
         print(generation)
 
+        for i in range(len(population)):
+            print(fitness[i], population[i])
+
         generation += 1
 
+        fitness_graph.append(max_fitness)
         if(max_fitness >= 29):
 
             print(generation)
+            plt.plot(range(1, generation+1), fitness_graph)
+            plt.show()
             return population, fitness
 
 
