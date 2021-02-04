@@ -22,13 +22,13 @@ def reproduce(x, y):
 
     maxfitness = fitness_func(x)
     maxboard = x
-    for i in range(len(x)):
-        cell = x[:i]+y[i:]
-        fit = fitness_func(cell)
+    # for i in range(len(x)):
+    #     cell = x[:i]+y[i:]
+    #     fit = fitness_func(cell)
 
-        if(fit > maxfitness):
-            fit = maxfitness
-            maxboard = cell
+    #     if(fit > maxfitness):
+    #         fit = maxfitness
+    #         maxboard = cell
     # cut = random.randint(0, 7)
     # a = x[:cut]+y[cut:]
     if(maxboard == x):
@@ -119,7 +119,7 @@ def genetic_algorithm(population, fitness_func):
 
             child = reproduce(x, y)
 
-            if(random.random() <= 0.5):
+            if(random.random() <= 0.05):
                 child = mutate(child)
 
             new_population.append(child)
