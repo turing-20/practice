@@ -90,7 +90,7 @@ def genetic_algorithm(population, fitness_func):
 
             child = reproduce(x, y)
 
-            if(random.random() <= 0.1):
+            if(random.random() <= 0.05):
                 child = mutate(child)
 
             new_population.append(child)
@@ -113,7 +113,7 @@ def genetic_algorithm(population, fitness_func):
 
 if __name__ == "__main__":
     population = []
-    for i in range(100):
+    for i in range(20):
         a = []
         for j in range(8):
             a.append(0)
