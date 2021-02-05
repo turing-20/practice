@@ -103,6 +103,7 @@ def genetic_algorithm(population, fitness_func):
 
     global generation
     fitness_graph.append(max([fitness_func(x) for x in population]))
+    mutation_probability = 0.05
     while(1):
 
         new_population = []
@@ -118,8 +119,12 @@ def genetic_algorithm(population, fitness_func):
                 count += 1
 
             child = reproduce(x, y)
-
-            if(random.random() <= 0.05):
+            if(generation > 10):
+                if(fitness_graph[-1] == fitness_graph[-2]):
+                    mutation_probability += 0.05
+                else:
+                    mutation_probability = 0.05
+            if(random.random() <= mutation_probability):
                 child = mutate(child)
 
             new_population.append(child)
@@ -138,6 +143,7 @@ def genetic_algorithm(population, fitness_func):
         #     print(fitness[i], population[i])
 
         fitness_graph.append(max_fitness)
+
         if(max_fitness >= 29):
             print(generation)
             y = generation
@@ -173,6 +179,7 @@ if __name__ == "__main__":
 
     for i in range(100):
         print(i, end=" ")
+        fitness_graph = []
         sum1 += findgeneration()
 
     print(sum1/100)
