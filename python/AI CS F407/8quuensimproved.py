@@ -22,15 +22,15 @@ def reproduce(x, y):
 
     maxfitness = fitness_func(x)
     maxboard = x
-    # for i in range(len(x)):
-    #     cell = x[:i]+y[i:]
-    #     fit = fitness_func(cell)
+    for i in range(len(x)):
+        cell = x[:i]+y[i:]
+        fit = fitness_func(cell)
 
-    #     if(fit > maxfitness):
-    #         fit = maxfitness
-    #         maxboard = cell
-    # cut = random.randint(0, 7)
-    # a = x[:cut]+y[cut:]
+        if(fit > maxfitness):
+            fit = maxfitness
+            maxboard = cell
+    cut = random.randint(0, 7)
+    a = x[:cut]+y[cut:]
     if(maxboard == x):
         cut = random.randint(0, 7)
         maxboard = x[:cut]+y[cut:]
