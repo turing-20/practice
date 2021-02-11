@@ -114,7 +114,7 @@ def genetic_algorithm(population, fitness_func):
             x = random_selection(population, fitness)
             y = random_selection(population, fitness)
             count = 0
-            while(x == y and generation > 10 and count < 10):
+            while(x == y and generation > 10 and count < 5):
                 y = random_selection(population, fitness)
                 count += 1
 
@@ -177,9 +177,9 @@ def findgeneration():
 if __name__ == "__main__":
     sum1 = 0
 
-    for i in range(100):
+    for i in range(1):
         print(i, end=" ")
         fitness_graph = []
         sum1 += findgeneration()
 
-    print(sum1/100)
+    print(sum1/1)
