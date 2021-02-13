@@ -135,7 +135,7 @@ def genetic_algorithm_tsp(population):
         generation += 1
         fitness_graph.append(max_fitness)
 
-        if(generation >= 10000):
+        if(generation >= 1000):
 
             plt.plot(range(1, generation), fitness_graph)
             plt.show()
