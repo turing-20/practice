@@ -27,7 +27,7 @@ def reproduce(x, y):
 def mutate(child):
 
     change_cell = random.randint(0, (len(child)-1))
-    a = child[:change_cell]+[random.randint(0, 7)]+child[change_cell+1:]
+    a = child[:change_cell]+[random.randint(1, 8)]+child[change_cell+1:]
 
     return a
 
@@ -114,6 +114,9 @@ def genetic_algorithm(population, fitness_func):
 
             print(generation)
             plt.plot(range(1, generation+1), fitness_graph)
+            plt.xlabel("Generation")
+            plt.ylabel("Fitness")
+            plt.title("8 Queens Basic")
             plt.show()
             return population, fitness
 
