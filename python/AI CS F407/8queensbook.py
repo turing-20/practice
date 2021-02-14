@@ -116,7 +116,7 @@ def genetic_algorithm(population, fitness_func):
             plt.plot(range(1, generation+1), fitness_graph)
             plt.xlabel("Generation")
             plt.ylabel("Fitness")
-            plt.title("8 Queens Basic")
+            # plt.title("8 Queens Basic")
             plt.show()
             return population, fitness
 
