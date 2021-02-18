@@ -1,47 +1,54 @@
-// C program to implement one side of FIFO
-// This side writes first, then reads
-#include <stdio.h>
-#include <string.h>
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <sys/types.h>
 #include <unistd.h>
+#include <stdio.h>
+#include <sys/stat.h>
+#include <sys/wait.h>
+#include <string.h>
 
 int main()
 {
-    int fd;
+    int child;
 
-    // FIFO file path
-    char *myfifo = "myfifo";
+    char clientmessage[100];
+    char servermesaage[100];
+    char exit[6] = {'e', 'x', 'i', 't', '\n', '\0'};
 
-    // Creating the named file(FIFO)
-    // mkfifo(<pathname>, <permission>)
-    mkfifo(myfifo, 0666);
+    char *clientfifo = "/tmp/clientnamedpipe";
+    char *serverfifo = "/tmp/servernamedpipe";
 
-    char arr1[80], arr2[80];
-    while (1)
+    mkfifo(clientfifo, 0666);
+    mkfifo(serverfifo, 0666);
+
+    if (child = fork())
     {
-        // Open FIFO for write only
-        fd = open(myfifo, O_WRONLY);
+        while (1)
+        {
+            fgets(servermesaage, 100, stdin);
 
-        // Take an input arr2ing from user.
-        // 80 is maximum length
-        fgets(arr2, 80, stdin);
+            if (strcmp(servermesaage, exit) == 0)
+            {
+                kill(child, SIGKILL);
+                wait(NULL);
+                break;
+            }
 
-        // Write the input arr2ing on FIFO
-        // and close it
-        write(fd, arr2, strlen(arr2) + 1);
-        close(fd);
+            FILE *servernamedpipe = fopen(serverfifo, "w");
 
-        // Open FIFO for Read only
-        fd = open(myfifo, O_RDONLY);
+            fprintf(servernamedpipe, "%s", servermesaage);
+            fclose(servernamedpipe);
+        }
+    }
+    else
+    {
+        while (1)
+        {
+            FILE *clientnamedpipe = fopen(clientfifo, "r");
+            fgets(clientmessage, 100, clientnamedpipe);
 
-        // Read from FIFO
-        read(fd, arr1, sizeof(arr1));
+            if (strlen(clientmessage))
+                printf("Client Message : %s", clientmessage);
 
-        // Print the read message
-        printf("User2: %s\n", arr1);
-        close(fd);
+            fclose(clientnamedpipe);
+        }
     }
     return 0;
 }
