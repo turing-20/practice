@@ -3,7 +3,9 @@
     "files.associations": {
         "ostream": "cpp",
         "iostream": "cpp",
-        "string.h": "c"
+        "string.h": "c",
+        "chrono": "cpp",
+        "complex": "cpp"
     },
     "cmake.configureOnOpen": true
 }
