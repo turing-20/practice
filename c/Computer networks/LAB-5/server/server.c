@@ -8,7 +8,7 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <string.h>
-
+#include <signal.h>
 #define SA struct sockaddr
 
 
@@ -90,6 +90,17 @@ int main(int argc, char **argv)
 
     len = sizeof(cli);
 
+    if(!fork())
+    {
+        char buff[20];
+        scanf("%s", buff);
+        printf("%d", getpid());
+
+        if(strcmp(buff, "exit") == 0)
+            killpg(getppid(), SIGTERM);
+
+    }
+    printf("Enter exit to stop server:\n");
     for(;;)
     {
         connfd = accept(sockfd, (SA *)&cli, &len);

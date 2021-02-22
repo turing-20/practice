@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <string.h>
+#include <signal.h>
 
 #define SA struct sockaddr
 
@@ -35,7 +36,12 @@ void str_echo(int sockfd)
 
         bzero(buff,sizeof(buff));
         
-        read(sockfd,buff,sizeof(buff));
+        if(read(sockfd,buff,sizeof(buff))==0)
+        {
+            printf("server unreachable");
+            return;
+        }
+
         fprintf(f,"%s",buff);
 
         printf("File recieved\n");
@@ -76,6 +82,7 @@ int main(int argc, char **argv)
         printf("Connection Successfull\n");
     }
 
+    printf("Enter File name or enter exit:\n");
     str_echo(sockfd);
 
     close(sockfd);
