@@ -11,10 +11,44 @@
 
 #define SA struct sockaddr
 
-int main()
+
+void str_echo(int sockfd)
+{
+    for(;;)
+    {
+        char buff[80];
+        bzero(buff,sizeof(buff));
+
+        read(sockfd,buff,sizeof(buff));
+
+        FILE *f;
+        f=fopen(buff,"r");
+        if(f==NULL)
+        {
+            bzero(buff,sizeof(buff));
+            printf("NO file found, empty file sent\n");
+        }
+        else
+        {
+            bzero(buff,sizeof(buff));
+            for(int i=0; i<10;i++)
+            {
+                fscanf(f,"%c",&buff[i]);
+            }
+        }
+        // printf("%s\n",buff);
+        write(sockfd,buff,sizeof(buff));
+        fclose(f);
+        printf("File sent\n");
+    }
+
+}
+
+int main(int argc, char **argv)
 {
     int sockfd, connfd, len;
     struct sockaddr_in servaddr, cli;
+    pid_t childpid;
 
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -31,8 +65,8 @@ int main()
     bzero(&servaddr, sizeof(servaddr));
 
     servaddr.sin_family = AF_INET;
-    servaddr.sin_addr.s_addr = inet_addr("0.0.0.0");
-    servaddr.sin_port = htons(8080);
+    servaddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+    servaddr.sin_port = htons(atoi(argv[1]));
 
     if (bind(sockfd, (SA *)&servaddr, sizeof(servaddr)) != 0)
     {
@@ -56,21 +90,18 @@ int main()
 
     len = sizeof(cli);
 
-    connfd = accept(sockfd, (SA *)&cli, &len);
+    for(;;)
+    {
+        connfd = accept(sockfd, (SA *)&cli, &len);
 
-    if (connfd < 0)
-    {
-        printf("Server connection failed");
-        exit(0);
+        if((childpid=fork())==0)
+        {
+            close(sockfd);
+            str_echo(connfd);
+            exit(0);
+        }
+        close(connfd);
     }
-    else
-    {
-        printf("Connection established\n");
-    }
-    char buff[80];
-    strcpy(buff, "HELLO WORLD");
-    write(sockfd, buff, sizeof(buff));
-    close(sockfd);
 
     return 0;
 }
