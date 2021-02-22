@@ -94,8 +94,6 @@ int main(int argc, char **argv)
     {
         char buff[20];
         scanf("%s", buff);
-        printf("%d", getpid());
-
         if(strcmp(buff, "exit") == 0)
             killpg(getppid(), SIGTERM);
 
