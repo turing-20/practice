@@ -19,11 +19,11 @@ void str_echo(int sockfd)
         char buff[80];
         bzero(buff,sizeof(buff));
 
-        read(sockfd,buff,sizeof(buff));
+        int a =read(sockfd,buff,sizeof(buff));
 
         FILE *f;
         f=fopen(buff,"r");
-        if(f==NULL)
+        if(f==NULL && a!=0)
         {
             bzero(buff,sizeof(buff));
             printf("NO file found, empty file sent\n");
