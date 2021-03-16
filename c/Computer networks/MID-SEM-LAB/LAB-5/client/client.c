@@ -10,26 +10,27 @@
 
 #define SA struct sockaddr
 
-
-
 void str_echo(int sockfd)
 {
-    char buff[100];
-    bzero(buff,sizeof(buff));
+    char buff[1024];
+    bzero(buff, sizeof(buff));
 
     printf("Enter Message to be sent to server:\n");
 
-    fflush(stdin);
-    fflush(stdout);
+    fgets(buff, sizeof(buff), stdin);
+    write(sockfd, buff, strlen(buff));
 
-    scanf("%[^n]s",buff);
-    write(sockfd,buff,sizeof(buff));
+    bzero(buff, sizeof(buff));
 
-    bzero(buff,sizeof(buff));
+    int rb = read(sockfd, buff, sizeof(buff));
 
-    read(sockfd,buff,sizeof(buff));
-
-    printf("Message received from server: %s",buff);
+    buff[rb]='\0';
+    printf("Message received from server: ");
+    for (int i = strlen(buff) - 1; i >= 0; i--)
+    {
+        printf("%c", buff[i]);
+    }
+    printf("\n");
 
     return;
 }
@@ -52,8 +53,8 @@ int main(int argc, char **argv)
     bzero(&servaddr, sizeof(servaddr));
 
     servaddr.sin_family = AF_INET;
-    servaddr.sin_addr.s_addr = inet_addr("127.0.0.1");
-    servaddr.sin_port = htons(atoi(argv[1]));
+    servaddr.sin_addr.s_addr = inet_addr(argv[1]);
+    servaddr.sin_port = htons(atoi(argv[2]));
 
     if (connect(sockfd, (SA *)&servaddr, sizeof(servaddr)) != 0)
     {
@@ -65,7 +66,7 @@ int main(int argc, char **argv)
         printf("Connection Successfull\n");
     }
 
-    printf("Enter Message to be sent:\n");
+    // printf("Enter Message to be sent:\n");
     str_echo(sockfd);
 
     close(sockfd);

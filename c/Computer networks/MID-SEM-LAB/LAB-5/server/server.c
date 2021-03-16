@@ -11,28 +11,30 @@
 #include <signal.h>
 #define SA struct sockaddr
 
-
 void str_echo(int sockfd)
 {
-        char buff[100];
-        bzero(buff,sizeof(buff));
+    char buff[100];
+    bzero(buff, sizeof(buff));
 
-        read(sockfd,buff,sizeof(buff));
+    int rb = read(sockfd, buff, sizeof(buff));
 
-        printf("Mesaage recieved from client: %s\n",buff);
+    printf("Mesaage recieved from client: ");
+    buff[rb] = '\0';
+    for (int i = strlen(buff) - 1; i >= 0; i--)
+    {
+        printf("%c", buff[i]);
+    }
+    printf("\n");
 
-        bzero(buff,sizeof(buff));
+    bzero(buff, sizeof(buff));
 
-        printf("Enter message to sent to client:\n");
+    printf("Enter message to sent to client: \n");
 
-        fflush(stdin);
-        fflush(stdout);
+    fgets(buff, sizeof(buff), stdin);
 
-        scanf("%[^n]s",buff);
+    write(sockfd, buff, strlen(buff));
 
-        write(sockfd,buff,sizeof(buff));
-
-        return;
+    return;
 }
 
 int main(int argc, char **argv)
@@ -80,19 +82,20 @@ int main(int argc, char **argv)
     }
 
     len = sizeof(cli);
-    printf("Enter exit to stop server:\n");
-    for(;;)
+    // printf("Enter exit to stop server:\n");
+    for (;;)
     {
         connfd = accept(sockfd, (SA *)&cli, &len);
 
-        if((childpid=fork())==0)
+        if ((childpid = fork()) == 0)
         {
             close(sockfd);
             str_echo(connfd);
-            exit(0);
+            close(connfd);
+            exit(EXIT_SUCCESS);
         }
-        close(connfd);
+        // str_echo(connfd);
     }
-
+    close(sockfd);
     return 0;
 }
