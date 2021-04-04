@@ -7,16 +7,75 @@
 #include <arpa/inet.h>
 #include <string.h>
 #include <signal.h>
+#include <openssl/bio.h>
+#include <time.h>
+#include <openssl/crypto.h>
+#include <openssl/x509.h>
+#include <openssl/pem.h>
+#include <openssl/ssl.h>
+#include <openssl/err.h>
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <errno.h>
+
+
 
 #define SA struct sockaddr
 
-void str_echo(int sockfd)
-{
-    
+
+void parse_url(char *url, char **hostname, char **port, char** path) {
+    printf("URL: %s\n", url);
+
+    char *p;
+    p = strstr(url, "://");
+
+    char *protocol = 0;
+    if (p) {
+        protocol = url;
+        *p = 0;
+        p += 3;
+    } else {
+        p = url;
+    }
+
+    if (protocol) {
+        if (strcmp(protocol, "http")) {
+            fprintf(stderr,
+                    "Unknown protocol '%s'. Only 'http' is supported.\n",
+                    protocol);
+            exit(1);
+        }
+    }
+
+    *hostname = p;
+    while (*p && *p != ':' && *p != '/' && *p != '#') ++p;
+
+    *port = "80";
+    if (*p == ':') {
+        *p++ = 0;
+        *port = p;
+    }
+    while (*p && *p != '/' && *p != '#') ++p;
+
+    *path = p;
+    if (*p == '/') {
+        *path = p + 1;
+    }
+    *p = 0;
+
+    while (*p && *p != '#') ++p;
+    if (*p == '#') *p = 0;
+
+    printf("hostname: %s\n", *hostname);
+    printf("port: %s\n", *port);
+    printf("path: %s\n", *path);
 }
 
 int main(int argc, char **argv)
 {
+    char *url = argv[1];
+    char *hostname, *port, *path;
+    parse_url(url, &hostname, &port, &path);
     int sockfd, connfd;
     struct sockaddr_in servaddr, cli;
     struct hostent *hostent;
@@ -36,11 +95,13 @@ int main(int argc, char **argv)
     servaddr.sin_family = AF_INET;
     
 
-    hostent = gethostbyname("example.com");
+    hostent = gethostbyname(hostname);
+
 
     servaddr.sin_addr.s_addr = inet_addr(inet_ntoa(*(struct in_addr*)*(hostent->h_addr_list)));
-    servaddr.sin_port = htons(80);
+    servaddr.sin_port = htons(atoi(port));
 
+    // printf("%d \n",servaddr.sin_addr.s_addr);
     if (connect(sockfd, (SA *)&servaddr, sizeof(servaddr)) != 0)
     {
         printf("Server unreachable\n");
@@ -51,7 +112,34 @@ int main(int argc, char **argv)
         printf("Connection Started\n");
     }
 
-    str_echo(sockfd);
+    // str_echo(sockfd);
+    char buffer[2048];
+
+    sprintf(buffer, "GET /%s HTTP/1.1\r\n", path);
+    sprintf(buffer + strlen(buffer), "Host: %s:%s\r\n", hostname, port);
+    sprintf(buffer + strlen(buffer), "Connection: close\r\n");
+    sprintf(buffer + strlen(buffer), "User-Agent: honpwc web_get 1.0\r\n");
+    sprintf(buffer + strlen(buffer), "\r\n");
+
+    send(sockfd, buffer, strlen(buffer), 0);
+    printf("Sent Headers:\n%s", buffer);
+
+
+    bzero(&buffer,sizeof(buffer));
+
+    recv(sockfd,buffer,sizeof(buffer),0);
+
+    printf("%s\n",buffer);
+    FILE *fp;
+
+    fp=fopen("output.png","wb");
+
+    char data[200000];
+    bzero(&data,sizeof(data));
+
+    int rb = read(sockfd,data,sizeof(data));
+
+    fwrite(data,1,rb,fp);
 
     close(sockfd);
     return 0;

@@ -6,8 +6,8 @@ Logical Agent for programming assignment 2.
 class Agent:
     def __init__(self):
         self._mineFieldWorld = [
-            ['M', 'M', '', ''],  # Rooms [1,4] to [4,4]
-            ['', 'M', 'M', ''],  # Rooms [1,3] to [4,3]
+            ['', 'M', '', ''],  # Rooms [1,4] to [4,4]
+            ['', 'M', '', ''],  # Rooms [1,3] to [4,3]
             ['', '', 'M', ''],  # Rooms [1,2] to [4,2]
             ['', '', '', ''],  # Rooms [1,1] to [4,1]
 

@@ -5,7 +5,10 @@
         "iostream": "cpp",
         "string.h": "c",
         "chrono": "cpp",
-        "complex": "cpp"
+        "complex": "cpp",
+        "bio.h": "c",
+        "err.h": "c",
+        "types.h": "c"
     },
     "cmake.configureOnOpen": true
 }

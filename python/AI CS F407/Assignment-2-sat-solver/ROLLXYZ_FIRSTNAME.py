@@ -175,13 +175,6 @@ def main():
     kb.add_clause([-1])
     kb.add_clause([-16])
 
-    # grid = []
-
-    # for i in range(4):
-    #     a = []
-    #     for j in range(4):
-    #         a.append((i)*4+j+1)
-    #     grid.append(a)
     total_path.append([1, 1])
     while(ag.FindCurrentLocation() != [4, 4]):
         visited.add(convert(ag.FindCurrentLocation()))
@@ -194,7 +187,7 @@ def main():
         Add_clauses(mines, cur_loc)
 
         Take_Action()
-    total_path.append([4, 4])
+    # total_path.append([4, 4])
     print(total_path)
     # for i in range(1, 17):
     #     print(convert_back(i))
