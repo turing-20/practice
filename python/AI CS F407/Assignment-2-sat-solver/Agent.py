@@ -7,9 +7,9 @@ class Agent:
     def __init__(self):
         self._mineFieldWorld = [
             ['', 'M', '', ''],  # Rooms [1,4] to [4,4]
-            ['', 'M', '', ''],  # Rooms [1,3] to [4,3]
+            ['', '', '', ''],  # Rooms [1,3] to [4,3]
             ['', '', 'M', ''],  # Rooms [1,2] to [4,2]
-            ['', '', '', ''],  # Rooms [1,1] to [4,1]
+            ['', '', 'M', ''],  # Rooms [1,1] to [4,1]
 
         ]  # This is the mine field world shown in the assignment question.
         # A different instance of the mine field world will be used for evaluation.

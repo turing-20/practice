@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 from Agent import *  # See the Agent.py file
 from pysat.solvers import Glucose3
-import time
-import math
+
 # All your code can go here.
 
 # You can change the main function as you wish. Run this program to see the output. Also see Agent.py code.
@@ -188,7 +187,7 @@ def main():
 
         Take_Action()
     # total_path.append([4, 4])
-    print(total_path)
+    print(total_path, len(total_path))
     # for i in range(1, 17):
     #     print(convert_back(i))
 
