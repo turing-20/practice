@@ -66,7 +66,8 @@ extern int yydebug;
     VALUE = 272,
     IN = 273,
     EOL = 274,
-    COMMA = 275
+    COMMA = 275,
+    NEWLINE = 276
   };
 #endif
 /* Tokens.  */
@@ -88,18 +89,18 @@ extern int yydebug;
 #define IN 273
 #define EOL 274
 #define COMMA 275
+#define NEWLINE 276
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 14 "parser.y"
+#line 26 "parser.y"
 
-  char *key;
   int num;
-  char *varname;
+  char *name;
 
-#line 103 "y.tab.h"
+#line 104 "y.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

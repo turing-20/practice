@@ -69,7 +69,14 @@
 #line 1 "parser.y"
 
 #include <stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include "assgn.h"
 int yylex();
+State *state;
+/* state = (State *) malloc(SIZE_OF_BOARD * sizeof(State)); */
+char* varnames[4][4][1000];
+int ind[4][4];
 
 int n = 0;
 
@@ -77,9 +84,12 @@ void yyerror(char *s) {
   fprintf(stderr, "yyerror %s %d\n", s, n);
 }
 
+void add_varname(char *name, int x, int y);
+void find_pos(char *name, int *pos);
 
 
-#line 83 "y.tab.c"
+
+#line 93 "y.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -171,13 +181,13 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 14 "parser.y"
+#line 24 "parser.y"
 
-  char *key;
+  int key;
   int num;
   char *varname;
 
-#line 181 "y.tab.c"
+#line 191 "y.tab.c"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -494,18 +504,18 @@ union yyalloc
 #endif /* !YYCOPY_NEEDED */
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  5
+#define YYFINAL  17
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   3
+#define YYLAST   41
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  21
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  3
+#define YYNNTS  9
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  4
+#define YYNRULES  23
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  7
+#define YYNSTATES  45
 
 #define YYUNDEFTOK  2
 #define YYMAXUTOK   275
@@ -554,7 +564,9 @@ static const yytype_int8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    28,    28,    28,    30
+       0,    42,    42,    42,    43,    46,    47,    48,    49,    50,
+      53,    59,    60,    67,    68,    69,    71,    72,    73,    74,
+      76,    77,    78,    79
 };
 #endif
 
@@ -565,8 +577,8 @@ static const char *const yytname[] =
 {
   "$end", "error", "$undefined", "VARNAME", "NUMBER", "ADD", "SUBTRACT",
   "MULTIPLY", "DIVIDE", "LEFT", "RIGHT", "UP", "DOWN", "ASSIGN", "TO",
-  "VAR", "IS", "VALUE", "IN", "EOL", "COMMA", "$accept", "program",
-  "expression", YY_NULLPTR
+  "VAR", "IS", "VALUE", "IN", "EOL", "COMMA", "$accept", "program", "$@1",
+  "expression", "val", "x", "y", "opn", "dir", YY_NULLPTR
 };
 #endif
 
@@ -581,7 +593,7 @@ static const yytype_int16 yytoknum[] =
 };
 # endif
 
-#define YYPACT_NINF (-9)
+#define YYPACT_NINF (-13)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
@@ -595,7 +607,11 @@ static const yytype_int16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-      -5,    -8,     2,    -5,    -9,    -9,    -9
+      -3,   -13,   -13,   -13,   -13,   -13,   -13,     3,     8,    -5,
+      19,   -13,     9,     6,    13,    14,     5,   -13,    -3,   -13,
+     -13,   -13,   -13,   -13,    10,    18,    27,   -13,   -13,    12,
+     -13,   -13,    15,    16,    17,    29,   -13,    29,    29,   -13,
+     -13,    20,    21,   -13,   -13
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -603,19 +619,23 @@ static const yytype_int8 yypact[] =
      means the default is an error.  */
 static const yytype_int8 yydefact[] =
 {
-       0,     0,     0,     3,     4,     1,     2
+       4,    12,    13,    16,    17,    18,    19,     0,     0,     0,
+       0,     2,     0,     0,     0,     0,     0,     1,     4,     8,
+      20,    21,    22,    23,     0,     0,     0,    10,    14,     0,
+       3,     5,     0,     0,     0,     0,     7,     0,     0,    15,
+      11,     0,     0,     6,     9
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-      -9,     0,    -9
+     -13,    23,   -13,   -13,    28,    -2,   -12,   -13,   -13
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-      -1,     2,     3
+      -1,    10,    18,    11,    12,    29,    40,    13,    24
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -623,31 +643,47 @@ static const yytype_int8 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-       1,     4,     5,     6
+       1,     2,     3,     4,     5,     6,     1,     2,    27,    28,
+       7,    15,     8,    16,     9,    20,    21,    22,    23,    17,
+       9,    32,    28,    33,    34,    41,    42,    25,    19,    31,
+      26,    28,    35,    39,    36,    14,    37,    38,     0,    43,
+      44,    30
 };
 
 static const yytype_int8 yycheck[] =
 {
-       5,     9,     0,     3
+       3,     4,     5,     6,     7,     8,     3,     4,     3,     4,
+      13,     3,    15,    18,    17,     9,    10,    11,    12,     0,
+      17,     3,     4,    25,    26,    37,    38,    14,    19,    19,
+      16,     4,    20,     4,    19,     7,    20,    20,    -1,    19,
+      19,    18
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,     5,    22,    23,     9,     0,    22
+       0,     3,     4,     5,     6,     7,     8,    13,    15,    17,
+      22,    24,    25,    28,    25,     3,    18,     0,    23,    19,
+       9,    10,    11,    12,    29,    14,    16,     3,     4,    26,
+      22,    19,     3,    26,    26,    20,    19,    20,    20,     4,
+      27,    27,    27,    19,    19
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_int8 yyr1[] =
 {
-       0,    21,    22,    22,    23
+       0,    21,    23,    22,    22,    24,    24,    24,    24,    24,
+      25,    25,    25,    25,    26,    27,    28,    28,    28,    28,
+      29,    29,    29,    29
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
 static const yytype_int8 yyr2[] =
 {
-       0,     2,     2,     1,     2
+       0,     2,     0,     3,     0,     3,     7,     5,     2,     7,
+       3,     5,     1,     1,     1,     1,     1,     1,     1,     1,
+       1,     1,     1,     1
 };
 
 
@@ -1342,14 +1378,115 @@ yyreduce:
   YY_REDUCE_PRINT (yyn);
   switch (yyn)
     {
-  case 4:
-#line 30 "parser.y"
-                     { printf("parser chla\n"); }
-#line 1349 "y.tab.c"
+  case 2:
+#line 42 "parser.y"
+                     { printf("prog %d\n", (yyvsp[0].num)); }
+#line 1385 "y.tab.c"
+    break;
+
+  case 5:
+#line 46 "parser.y"
+                        { move(state, (yyvsp[-1].key), (yyvsp[-2].key)); print_board(state); }
+#line 1391 "y.tab.c"
+    break;
+
+  case 6:
+#line 47 "parser.y"
+                                        { print_board(state); assign(state, (yyvsp[-5].num), (yyvsp[-3].num), (yyvsp[-1].num)); print_board(state); }
+#line 1397 "y.tab.c"
+    break;
+
+  case 7:
+#line 48 "parser.y"
+                                      { int pos[2]; find_pos((yyvsp[-1].varname), pos);  assign(state, (yyvsp[-3].num), pos[0], pos[1]); print_board(state); }
+#line 1403 "y.tab.c"
+    break;
+
+  case 9:
+#line 50 "parser.y"
+                                         { char *tok = strtok((yyvsp[-5].varname), " "); printf("parser exp varname %s\n", tok); add_varname(tok, (yyvsp[-3].num), (yyvsp[-1].num)); }
+#line 1409 "y.tab.c"
+    break;
+
+  case 10:
+#line 53 "parser.y"
+                       { 
+  int pos[2];
+  find_pos((yyvsp[0].varname), pos);
+  (yyval.num) = state->board[pos[0]][pos[1]];
+  printf("val in var => %d\n", (yyval.num));
+}
+#line 1420 "y.tab.c"
+    break;
+
+  case 11:
+#line 59 "parser.y"
+                         { (yyval.num) = state->board[(yyvsp[-2].num)][(yyvsp[0].num)]; printf("val => %d\n", (yyval.num)); }
+#line 1426 "y.tab.c"
+    break;
+
+  case 12:
+#line 60 "parser.y"
+              { 
+  printf("parser val %s\n", (yyvsp[0].varname));
+  int pos[2];
+  find_pos((yyvsp[0].varname), pos);
+  (yyval.num) = state->board[pos[0]][pos[1]];
+  printf("val in var => %d\n", (yyval.num));
+}
+#line 1438 "y.tab.c"
+    break;
+
+  case 16:
+#line 71 "parser.y"
+          { printf("parser opn %d\n", (yyvsp[0].key)); (yyval.key) = 1; }
+#line 1444 "y.tab.c"
+    break;
+
+  case 17:
+#line 72 "parser.y"
+               { (yyval.key) = 2; }
+#line 1450 "y.tab.c"
+    break;
+
+  case 18:
+#line 73 "parser.y"
+               { (yyval.key) = 3; }
+#line 1456 "y.tab.c"
+    break;
+
+  case 19:
+#line 74 "parser.y"
+             { (yyval.key) = 4; }
+#line 1462 "y.tab.c"
+    break;
+
+  case 20:
+#line 76 "parser.y"
+           { (yyval.key) = 1; }
+#line 1468 "y.tab.c"
+    break;
+
+  case 21:
+#line 77 "parser.y"
+            { (yyval.key) = 2; }
+#line 1474 "y.tab.c"
+    break;
+
+  case 22:
+#line 78 "parser.y"
+         { (yyval.key) = 3; }
+#line 1480 "y.tab.c"
+    break;
+
+  case 23:
+#line 79 "parser.y"
+           { (yyval.key) = 4; }
+#line 1486 "y.tab.c"
     break;
 
 
-#line 1353 "y.tab.c"
+#line 1490 "y.tab.c"
 
       default: break;
     }
@@ -1581,14 +1718,40 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 33 "parser.y"
+#line 81 "parser.y"
 
-// operation: ADD {printf("add\n"); $$ = 1;} | MULTIPLY | SUBTRACT | DIVIDE;
-// direction: LEFT {$$ = 2;} | RIGHT | UP | DOWN;
-// val: VALUE IN pos | NUMBER;
-// pos: POSITION | VARNAME;
+
+void add_varname(char *name, int x, int y) {
+  printf("add_varname %s || %d %d\n", name, x, y);
+  printf(" add _ varname %d\n", ind[x][y]);
+  varnames[x][y][ind[x][y]] = (char *)malloc(strlen(name) * sizeof(char));
+  strcpy(varnames[x][y][ind[x][y]++], name);
+}
+
+void find_pos(char *name, int *pos) {
+  for(int i = 0; i < 4; i++) {
+    for(int j = 0; j < 4; j++) {
+      for(int k = 0; k < ind[i][j]; k++) {
+        if(strcmp(name, varnames[i][j][k]) == 0) {
+          pos[0] = i;
+          pos[1] = j;
+          return;
+        }
+      }
+    }
+  }
+}
 
 int main() {
-    yyparse();
-    return 0;
+  state = (State *) malloc(SIZE_OF_BOARD * sizeof(State));
+  /* varnames = (char *) malloc(16 * sizeof(char *)); */
+  for(int i = 0; i < 4; i++) {
+    for(int j = 0; j < 4; j++) {
+      ind[i][j] = 0;
+    }
+  }
+  init(state);
+  print_board(state);
+  yyparse();
+  return 0;
 }
