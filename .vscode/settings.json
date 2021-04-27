@@ -8,7 +8,11 @@
         "complex": "cpp",
         "bio.h": "c",
         "err.h": "c",
-        "types.h": "c"
+        "types.h": "c",
+        "stdio.h": "c",
+        "stdlib.h": "c",
+        "string_view": "c",
+        "regex": "c"
     },
     "cmake.configureOnOpen": true
 }
